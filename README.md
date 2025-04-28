@@ -1,4 +1,4 @@
-# Andmebaas1
+# AB
 
 IndianCustomers ja UKCustomer select tabelid
 ![image](https://github.com/user-attachments/assets/65302077-484a-4e32-81f1-12ab36eff221)
