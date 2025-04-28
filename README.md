@@ -1,6 +1,4 @@
 
-![image](https://github.com/user-attachments/assets/3345bdef-bd03-44c3-88c0-83ebd6952540)# AB
-
 select * from Person
 go
 delete from Person where Id = 8
