@@ -1,112 +1,119 @@
 # Andmebaas1
 
-select Email, PATINDEX('%@aaa.com', Email) as FirstOccurence
+IndianCustomers ja UKCustomer select tabelid
+![image](https://github.com/user-attachments/assets/65302077-484a-4e32-81f1-12ab36eff221)
+
+select Id, Name, Email from IndianCustomers
+union all
+select Id, Name, Email from UKCustomers
+![image](https://github.com/user-attachments/assets/c556528e-cb91-42ae-a42b-3caf34bec804)
+
+select Id, Name, Email from IndianCustomers
+union
+select Id, Name, Email from UKCustomers
+![image](https://github.com/user-attachments/assets/ea6d171e-5375-4525-9741-5667fc27d23d)
+
+procedure spGetCustomers
+![image](https://github.com/user-attachments/assets/b7c4134e-f825-4e5d-a59f-dc7ee5c69e16)
+
+procedure spGetEmployeesByGenderAndDepartment
+![image](https://github.com/user-attachments/assets/22fb9991-200a-46f3-8f22-8856ab62cc2c)
+
+-- soov vaadata sp sisu ( содержимое процедуры ) !!
+sp_helptext spGetEmployeesByGenderAndDepartment
+![image](https://github.com/user-attachments/assets/da348979-d20b-4b40-84d6-5487a1668706)
+
+--- kuidas muuta sp-d ja pane krüpteeringu peale, et keegi teine peale teid ei saaks muuta
+alter proc spGetEmployeesByGenderAndDepartment
+@Gender nvarchar(20),
+@DepartmentId int
+with encryption --krüpteerimine
+as begin
+	select Name, Gender, DepartmentId from Employees where Gender = @Gender
+	and DepartmentId = @DepartmentId
+end
+--- ja vaata procedure !!
+sp_helptext spGetEmployeesByGenderAndDepartmen
+![image](https://github.com/user-attachments/assets/c74cf644-120e-4d2c-962b-3b91c1dc22aa)
+
+procedure spGetEmployeeCountByGender
+![image](https://github.com/user-attachments/assets/cdbb697f-a5e0-4194-9a23-731aa89ea48f)
+
+-- kui soovid sp tektsi näha !!
+sp_helptext spGetEmployeeCountByGender
+![image](https://github.com/user-attachments/assets/05f42167-87d3-4934-9896-f1775504fad4)
+
+-- vaatame , millest see sp sõltub !!
+sp_depends spGetEmployeeCountByGender
+-- vaatame tabelit !! 
+sp_depends Employees
+![image](https://github.com/user-attachments/assets/ccc078e8-3e32-4e21-ad03-e2d20cf6ae5b)
+![image](https://github.com/user-attachments/assets/efebf209-177c-4d3c-a995-bd56153c052b)
+
+procedure spGetNameById1
+
+declare @FirstName nvarchar(50)
+execute spGetNameById1 5, @FirstName output ( тут выбран 5 id )
+print 'Name of the employee = ' + @FirstName
+![image](https://github.com/user-attachments/assets/b4ee0931-bd8c-4132-bb6f-6b52536443bb)
+
+--- sisseehitatud string funktsioonid
+-- see konverteerib ASCII tähe väärtuse numbriks
+select ascii('a')
+-- kuvab A-tähe
+select char (97)
+![image](https://github.com/user-attachments/assets/8da4277f-d0d4-48a7-ab8b-eee395b36bd8)
+![image](https://github.com/user-attachments/assets/b4f7aab1-00b6-412e-b41b-ce5aac5c2d16)
+
+-- eemaldame tühjad kohad sulgudes
+select ltrim('        Hello')
+![image](https://github.com/user-attachments/assets/a5af6fa7-07e3-4858-b15b-524125869bf2)
+
+-- tühikute eemaldamine veerust
+select ltrim(Name) as FirstName from Employees
+![image](https://github.com/user-attachments/assets/b4c1af69-bac3-4bf7-9bab-1ab1e13e2c4c)
+
+--paremalt poolt tühjad stringid lõikab ära
+select rtrim('      Hello          ')
+![image](https://github.com/user-attachments/assets/d2b2987b-4e78-406b-8d10-b95ced70616f)
+
+--keerab kooloni sees olevad andmed vastupidiseks
+-- vastavalt upper ja lower-ga saan muuta märkide suurust
+-- reverse funktsioon pöörab kõik ümber
+select REVERSE(UPPER(ltrim(Name))) as FirstName, lower(Gender) as Gender,
+rtrim(ltrim(Name)) + ' ' + Gender as FullInfo
 from Employees
-where PATINDEX('%@aaa.com', Email) > 0
-![pilt](https://github.com/user-attachments/assets/b1a56586-36dc-4731-85dc-b31bdfc856af)
+![image](https://github.com/user-attachments/assets/2ccc39c1-22ea-4b83-a42b-e22399e07125)
 
-select Email, REPLACE(Email, '.com', '.net') as ConvertedEmail
+--näeb, mitu tähte on sõnal ja loeb tühikud sisse
+select Name, len(Name) as [Total Characters] from Employees
+![image](https://github.com/user-attachments/assets/3b7b1b3b-5ed5-4237-8160-7e2d236bbb6d)
+
+--- näeb, mitu tähte on sõnal ja ei loe tyhikuid sisse
+select Name, len(ltrim(Name)) as [Total Characters] from Employees
+![image](https://github.com/user-attachments/assets/5381319a-665d-4757-8b7b-b75cba87317e)
+
+updated tabel Emplooyes with Email
+![image](https://github.com/user-attachments/assets/7caf0425-0b52-48c5-8ef5-251887c612aa)
+
+--- lisame *-märgi alates teatud kohast
+select Name,
+	substring(Email, 1, 2) + REPLICATE('*', 5) + --peale teist tähemärki paneb viis tärni
+	SUBSTRING(Email, CHARINDEX('@', Email), len(Email) - charindex('@', Email)+1) as Email
 from Employees
-![pilt](https://github.com/user-attachments/assets/0b47c6f4-1241-46da-b25a-2d5821db4a17)
+![image](https://github.com/user-attachments/assets/b588eb89-2987-472a-968c-4d1c97a78bae)
 
-select Name, Email,
-	stuff(Email, 2, 3, '*****') as StuffedEmail
+--- kolm korda näitab stringis olevat väärtust
+select replicate(Name, 3)
 from Employees
-![pilt](https://github.com/user-attachments/assets/15a1579c-906b-4ebf-9681-7077ccbcd1be)
+![image](https://github.com/user-attachments/assets/ed6bbb51-751f-4a29-ae56-f6dd807a9129)
 
-select GETDATE(), 'GETDATE()'
-![pilt](https://github.com/user-attachments/assets/873fb078-54aa-47cc-b119-eabed73a4fc9)
+-- kuidas sisestada tyhikut kahe nime vahele
+select space(5)
+![image](https://github.com/user-attachments/assets/8f21f738-08fe-4334-a4a3-ed88acb959bc)
 
-tabel DateTime
-![pilt](https://github.com/user-attachments/assets/ef6972e6-2e78-4932-9173-d7ac6bf5beda)
-
-select CURRENT_TIMESTAMP, 'CURRENT_TIMESTAMP' -- aja p'ring
-select SYSDATETIME()  -- veel täpsem ajapäring
-select SYSDATETIMEOFFSET() -- täpne aeg koos ajalise nihkega UTC suhtes
-select GETUTCDATE()  --UTC aeg
-![pilt](https://github.com/user-attachments/assets/e077190c-dec0-4730-9d96-ef03b6c6177f)
-
-select isdate('asd') --tagastab 0 kuna string ei ole date e aeg
-![pilt](https://github.com/user-attachments/assets/be11e873-1f7c-4a8a-9c61-a57580aa7901)
-
-select ISDATE(getdate()) --tagastab 1 kuna on kp
-![pilt](https://github.com/user-attachments/assets/b3b7f483-bb62-4c5b-9d2d-1d837b2ad5c8)
-
-select isdate('2025-03-24 09:19:01.1490061') --tagastab 0 kuna max kolm komakohta võib olla
-![pilt](https://github.com/user-attachments/assets/4a796c36-a7f8-4c99-a4db-ddcb2a7e6883)
-
-select isdate('2025-03-24 09:19:01.149') ---tagastab 1
-![pilt](https://github.com/user-attachments/assets/30535ad8-2a02-4f1c-a9f9-96c5a3b35d98)
-
-select day(getdate()) --annab tänase päeva nr
-![pilt](https://github.com/user-attachments/assets/755a101c-bb32-4b7f-8050-7c35d16a08df)
-
-select day('02/28/2025') --annab stringis oleva päeva nr
-![pilt](https://github.com/user-attachments/assets/fabe5b7b-9400-4de9-a1c7-94c71bbec872)
-
-select month(getdate()) --annab tänase kuu nr
-![pilt](https://github.com/user-attachments/assets/a025c9f3-9174-474e-bd00-1a88c26daac6)
-
-select month('02/28/2025') --annab stringis oleva kuu nr
-![pilt](https://github.com/user-attachments/assets/eedd59d5-9b44-48cc-9ea5-185ee7e16234)
-
-select year(getdate()) --annab tänase aasta nr
-![pilt](https://github.com/user-attachments/assets/09713c9b-e36d-467f-890f-6a6329c1560f)
-
-select year('02/28/2025') --annab stringis oleva aasta nr
-![pilt](https://github.com/user-attachments/assets/c6ef777f-3d08-419e-8ddc-2742d583de17)
-
-select datename(day, '2025-03-24 09:19:01.149') --annab stringis oleva päeva nr
-![pilt](https://github.com/user-attachments/assets/c3438a24-9975-474b-a9ac-99f76fba8241)
-
-select Datename(WEEKDAY, '2025-03-25 09:19:01.149')  -- annab stringis oleva päeva sõnana
-![pilt](https://github.com/user-attachments/assets/b57436d5-62fb-45f9-9386-bc040184e5b9)
-
-select datename(MONTH, '2025-03-24 09:19:01.149') -- annab stringis oleva kuu sõnana
-![pilt](https://github.com/user-attachments/assets/2c3572fa-5454-44e7-9467-8bed40eae5f8)
-
-select datename(dayofYEAR, '2025-03-24 09:19:01.149') 
-![pilt](https://github.com/user-attachments/assets/1cec21cc-d30c-4d4e-8453-ac4f377c4f46)
-
-tabel EmployeesWithDates 
-![pilt](https://github.com/user-attachments/assets/feb983d1-8c0d-4e98-b52c-7eea58efd740)
-
-select Name, DateOfBirth, DATENAME(weekday, DateOfBirth) as [Day] from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/070bd869-ba44-40f1-9b6d-2c651aca9a5b)
-
-select MONTH(DateOfBirth) as MonthNumber from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/0af328b7-5104-4237-8e03-93fd39b9ab77)
-
-select DateName(MONTH, DateOfBirth) as [MonthName] from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/15ed4bf8-a72f-45ef-9d53-23f8683d3004)
-
-select YEAR(DateOfBirth) as [Year] from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/b7ecbe9b-451a-46fe-9a9a-e36e1e7f78fb)
-
-select DATEPART(weekday, '2025-01-30 12:22:56.401') --kuvab 1 kuna USA nädal algab pühapäevaga
-select DATEPART(MONTH, '2025-03-24 12:22:56.401') --kuvab kuu nr
-select DATEADD(DAY, 20, '2025-03-24 12:22:56.401') --liidab stringis olevale kp 20 päeva juurde
-select DATEADD(DAY, -20, '2025-03-24 12:22:56.401') --lahutab 20 päeva maha
-select datediff(MONTH, '11/30/2024', '03/24/2025')  --kuvab kahe stringi kuudevahelist aega nr-na
-select datediff(year, '11/30/2022', '03/24/2025') --näitab aastatevahelist aega nr-na
-![pilt](https://github.com/user-attachments/assets/24ceacfc-7fd9-44cd-b1c3-274a6d2b0835)
-
-select Id, Name, DateOfBirth, dbo.fnComputeAge(DateOfBirth) 
-as Age from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/95606d88-692c-4ad2-8b1a-9278e85a5540)
-
-select dbo.fnComputeAge('11/11/2010')
-![pilt](https://github.com/user-attachments/assets/01c4dab8-ce07-472f-b49a-f4b3740e0646)
-
-select Id, Name, DateOfBirth,
-convert(nvarchar, DateOfBirth, 109) as ConvertedDOB
-from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/7ad9b994-fb46-4224-811d-2288a7b1e305)
-
-select Id, Name, Name + ' - ' + cast(Id as nvarchar) as [Name-Id] 
-from EmployeesWithDates
-![pilt](https://github.com/user-attachments/assets/09b13c9c-2c03-4a31-ad50-703aa23c1500)
-
-select cast(getdate() as date) --tänane kp
-select convert(date, GETDATE()) -- tänane kp
-![pilt](https://github.com/user-attachments/assets/f4bd2205-916e-4642-ae5a-a54dc23d0175)
+--Employees tabelist teed päringu kahe nime osas (Name ja Email)
+--kahe nime vahel on 25 tühikut
+select Name + space(25) + Email as FullInfo
+from Employees
+![image](https://github.com/user-attachments/assets/a45d9be6-5379-4bbb-996c-61a66fee6e79)
